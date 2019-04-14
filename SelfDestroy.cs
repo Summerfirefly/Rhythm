@@ -13,7 +13,7 @@ public class SelfDestroy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (transform.position.z < -1)
+        if (transform.position.y < -5)
         {
             Destroy(gameObject);
         }
