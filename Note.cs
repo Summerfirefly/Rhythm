@@ -14,13 +14,26 @@ public class Note : MonoBehaviour
 
     void Start()
     {
-        
+        switch (type)
+        {
+            case NoteType.LEFT:
+                gameObject.GetComponent<RawImage>().texture = Resources.Load<Texture>("left");
+                break;
+            case NoteType.RIGHT:
+                gameObject.GetComponent<RawImage>().texture = Resources.Load<Texture>("right");
+                break;
+            case NoteType.NORMAL:
+                gameObject.GetComponent<RawImage>().texture = Resources.Load<Texture>("note");
+                break;
+            default:
+                break;
+        }
     }
 
     void FixedUpdate()
     {
-        Vector3 oldPosition = gameObject.transform.position;
-        gameObject.transform.position = new Vector3(oldPosition.x, oldPosition.y, oldPosition.z - GlobalSettings.noteVelocity * Time.fixedDeltaTime);
+        Vector3 v = gameObject.GetComponent<Rigidbody>().velocity;
+        gameObject.GetComponent<Rigidbody>().velocity = v + new Vector3(0, GlobalSettings.acclerateY, 0);
     }
 
     void OnDestroy()
