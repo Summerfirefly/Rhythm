@@ -5,31 +5,22 @@ using UnityEngine.UI;
 public class PlayMain : MonoBehaviour
 {
     public RawImage noteTemplete;
-    public RawImage horizonLine;
-    public RawImage verticalLine;
-    public RawImage slideBack;
+    public RawImage judgePoint;
 
     private float counter;
     private int noteIndex;
+    private int debugCombo;
     private float[] noteList = {0.0f, 2.0f, 2.2f, 2.4f, 3.0f, 3.5f, 3.8f, 4.8f };
     private Note[] notes = new Note[8];
 
     // Start is called before the first frame update
     void Start()
     {
-        RawImage horizonLineObj = Instantiate(horizonLine);
-        horizonLineObj.GetComponent<Transform>().SetParent(GameObject.Find("Slide").GetComponent<Transform>(), true);
-        horizonLineObj.transform.position = new Vector3(0, 0, 0);
-
-        RawImage subslideObj = Instantiate(slideBack);
-        subslideObj.GetComponent<Transform>().SetParent(GameObject.Find("Slide").GetComponent<Transform>(), true);
-        subslideObj.transform.position = new Vector3(0, 0, 75f);
-
-        for (int i = 0; i <= GlobalSettings.colNum; i++)
+        for (int i = 0; i < GlobalSettings.colNum; i++)
         {
-            RawImage verticalLineObj = Instantiate(verticalLine);
-            verticalLineObj.GetComponent<Transform>().SetParent(GameObject.Find("Slide").GetComponent<Transform>(), true);
-            verticalLineObj.transform.position = new Vector3(-5.25f+i*1.5f, 0, 75f);
+            RawImage judgePointObj = Instantiate(judgePoint);
+            judgePointObj.GetComponent<Transform>().SetParent(GameObject.Find("Slide").GetComponent<Transform>(), true);
+            judgePointObj.transform.position = new Vector3(-4.5f+i*1.5f, 0, 0);
         }
 
         Input.multiTouchEnabled = true;
@@ -49,10 +40,12 @@ public class PlayMain : MonoBehaviour
         if (Input.touchCount > 0)
         {
             Vector3 touchPosition = Input.touches[0].position;
-            touchPosition.z = 6.0f;
-            if ((Camera.main.ScreenToWorldPoint(touchPosition)-notes[GlobalSettings.closestNote].gameObject.transform.position).magnitude<1.5f)
+            touchPosition.z = 0.5f;
+            if ((Camera.main.ScreenToWorldPoint(touchPosition)-notes[GlobalSettings.closestNote].gameObject.transform.position).magnitude<0.7f)
             {
                 Destroy(notes[GlobalSettings.closestNote].gameObject);
+                debugCombo++;
+                GameObject.Find("combo").GetComponent<Text>().text = debugCombo.ToString();
             }
         }
     }
@@ -61,7 +54,9 @@ public class PlayMain : MonoBehaviour
     {
         RawImage noteObj = Instantiate(noteTemplete);
         noteObj.GetComponent<Transform>().SetParent(GameObject.Find("Slide").GetComponent<Transform>(), true);
-        noteObj.transform.position = new Vector3(GlobalSettings.leftNoteXPos + col * GlobalSettings.interval, 0, GlobalSettings.appearDistance);
+        noteObj.transform.position = new Vector3(GlobalSettings.leftNoteXPos + col * GlobalSettings.interval, 3.8f, 0);
+        Rigidbody rigidBody =  noteObj.gameObject.AddComponent<Rigidbody>();
+        rigidBody.useGravity = false;
 
         notes[noteIndex] = noteObj.gameObject.AddComponent<Note>();
         notes[noteIndex].type = NoteType.NORMAL;
