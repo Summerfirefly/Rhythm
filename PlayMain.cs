@@ -29,10 +29,9 @@ public class PlayMain : MonoBehaviour
 
         GameStatus.playName = "Roselia-Kimi no Kioku";
 
-        StreamReader score = new StreamReader(Application.streamingAssetsPath + "/score/" + GameStatus.playName);
-        string scoreLine;
+        string[] score = Resources.Load<TextAsset>("score/Roselia-Kimi no Kioku").text.Split('\n');
 
-        while ((scoreLine = score.ReadLine()) != null)
+        foreach (string scoreLine in score)
         {
             string[] temp = scoreLine.Split(',');
             noteTimeline[totalNum] = (float)Convert.ToDouble(temp[0]);
