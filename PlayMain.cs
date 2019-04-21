@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,9 +10,10 @@ public class PlayMain : MonoBehaviour
 
     private float counter;
     private int noteIndex;
+    private int totalNum;
     private int debugCombo;
-    private float[] noteList = {0.0f, 2.0f, 2.2f, 2.4f, 3.0f, 3.5f, 3.8f, 4.8f };
-    private Note[] notes = new Note[8];
+    private float[] noteTimeline = new float[1024];
+    private Note[] notes = new Note[1024];
 
     // Start is called before the first frame update
     void Start()
@@ -24,14 +26,29 @@ public class PlayMain : MonoBehaviour
         }
 
         Input.multiTouchEnabled = true;
+
+        GameStatus.playName = "Roselia-Kimi no Kioku";
+
+        StreamReader score = new StreamReader(Application.streamingAssetsPath + "/score/" + GameStatus.playName);
+        string scoreLine;
+
+        while ((scoreLine = score.ReadLine()) != null)
+        {
+            string[] temp = scoreLine.Split(',');
+            noteTimeline[totalNum] = (float)Convert.ToDouble(temp[0]);
+            notes[totalNum] = CreateNote(Convert.ToInt32(temp[1]));
+            notes[totalNum].type = (NoteType)Convert.ToInt32(temp[2]);
+            totalNum++;
+        }
     }
 
 
     void FixedUpdate()
     {
-        if (noteIndex < noteList.Length && Math.Abs(counter - noteList[noteIndex]) < 1e-5)
+        while (noteIndex < totalNum && Math.Abs(counter - noteTimeline[noteIndex]) < 1e-5)
         {
-            CreateNote(noteIndex % 7);
+            notes[noteIndex].active = true;
+            notes[noteIndex].GetComponent<Transform>().SetParent(GameObject.Find("Slide").GetComponent<Transform>(), true);
             noteIndex++;
         }
 
@@ -50,15 +67,13 @@ public class PlayMain : MonoBehaviour
         }
     }
 
-    void CreateNote(int col)
+    Note CreateNote(int col)
     {
         RawImage noteObj = Instantiate(noteTemplete);
-        noteObj.GetComponent<Transform>().SetParent(GameObject.Find("Slide").GetComponent<Transform>(), true);
-        noteObj.transform.position = new Vector3(GlobalSettings.leftNoteXPos + col * GlobalSettings.interval, 3.8f, 0);
+        noteObj.transform.position = new Vector3(GlobalSettings.leftNoteXPos + col * GlobalSettings.interval, GlobalSettings.appearDistance, 0);
         Rigidbody rigidBody =  noteObj.gameObject.AddComponent<Rigidbody>();
         rigidBody.useGravity = false;
 
-        notes[noteIndex] = noteObj.gameObject.AddComponent<Note>();
-        notes[noteIndex].type = NoteType.NORMAL;
+        return noteObj.gameObject.AddComponent<Note>();
     }
 }

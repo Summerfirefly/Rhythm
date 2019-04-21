@@ -3,14 +3,15 @@ using UnityEngine.UI;
 
 public enum NoteType
 {
-    LEFT,
-    RIGHT,
-    NORMAL
+    NORMAL = 0,
+    LEFT = 1,
+    RIGHT = 2
 }
 
 public class Note : MonoBehaviour
 {
     public NoteType type;
+    public bool active = false;
 
     void Start()
     {
@@ -32,8 +33,11 @@ public class Note : MonoBehaviour
 
     void FixedUpdate()
     {
-        Vector3 v = gameObject.GetComponent<Rigidbody>().velocity;
-        gameObject.GetComponent<Rigidbody>().velocity = v + new Vector3(0, GlobalSettings.acclerateY, 0);
+        if (active)
+        {
+            Vector3 v = gameObject.GetComponent<Rigidbody>().velocity;
+            gameObject.GetComponent<Rigidbody>().velocity = v + new Vector3(0, GlobalSettings.acclerateY, 0);
+        }
     }
 
     void OnDestroy()
