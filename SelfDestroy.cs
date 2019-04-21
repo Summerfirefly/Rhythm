@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class SelfDestroy : MonoBehaviour
 {
@@ -13,9 +11,10 @@ public class SelfDestroy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (transform.position.y < -5)
+        if (transform.position.y < -2)
         {
-            Destroy(gameObject);
+            transform.SetParent(null, true);
+            GetComponent<Note>().active = false;
         }
     }
 }

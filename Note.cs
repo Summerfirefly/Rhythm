@@ -35,13 +35,8 @@ public class Note : MonoBehaviour
     {
         if (active)
         {
-            Vector3 v = gameObject.GetComponent<Rigidbody>().velocity;
-            gameObject.GetComponent<Rigidbody>().velocity = v + new Vector3(0, GlobalSettings.acclerateY, 0);
+            Vector3 oldPosition = transform.position;
+            transform.position = oldPosition - new Vector3(0, GlobalSettings.speed * Time.fixedDeltaTime, 0);
         }
-    }
-
-    void OnDestroy()
-    {
-        GlobalSettings.closestNote++;
     }
 }

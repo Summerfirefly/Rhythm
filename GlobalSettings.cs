@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class GlobalSettings : MonoBehaviour
 {
@@ -11,7 +10,5 @@ public class GlobalSettings : MonoBehaviour
     public static float interval = 1.5f;
     public static float leftNoteXPos = -(colNum / 2) * interval;
     public static float appearDistance = 3.8f;
-    public static float acclerateY = -0.5f;
-
-    public static int closestNote;
+    public static float speed = 3.0f;
 }
