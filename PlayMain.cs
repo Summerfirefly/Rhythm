@@ -4,13 +4,6 @@ using UnityEngine.UI;
 
 public class PlayMain : MonoBehaviour
 {
-    public RawImage noteTemplete;
-    public RawImage judgePoint;
-
-    private Transform slide;
-
-    private float counter;
-    private int nextNote;
     private int totalNum;
     private int debugCombo;
 
@@ -19,15 +12,14 @@ public class PlayMain : MonoBehaviour
     private float[] noteTimeline = new float[1024];
     private Note[] notes = new Note[1024];
 
-    // Start is called before the first frame update
     void Start()
     {
-        slide = GameObject.Find("Slide").GetComponent<Transform>();
+        GameStatus.slide = GameObject.Find("Slide").GetComponent<Transform>();
 
-        for (int i = 0; i < GlobalSettings.colNum; i++)
+        for (int i = 0; i < GlobalData.colNum; i++)
         {
-            RawImage judgePointObj = Instantiate(judgePoint);
-            judgePointObj.GetComponent<Transform>().SetParent(slide, true);
+            RawImage judgePointObj = Instantiate(GlobalData.judgePoint);
+            judgePointObj.GetComponent<Transform>().SetParent(GameStatus.slide, true);
             judgePointObj.transform.position = new Vector3(-4.5f+i*1.5f, 0, 0);
         }
 
@@ -42,30 +34,20 @@ public class PlayMain : MonoBehaviour
         {
             string[] temp = scoreLine.Split(',');
             noteTimeline[totalNum] = (float)Convert.ToDouble(temp[0]);
-            notes[totalNum] = CreateNote(Convert.ToInt32(temp[1]));
-            notes[totalNum].type = (NoteType)Convert.ToInt32(temp[2]);
+            notes[totalNum] = Note.CreateNote(Convert.ToInt32(temp[1]), (NoteType)Convert.ToInt32(temp[2]), (float)Convert.ToDouble(temp[3]));
+            notes[totalNum].hitTime = noteTimeline[totalNum];
             totalNum++;
         }
 
         // 播放音乐
         AudioSource music = Camera.main.gameObject.GetComponent<AudioSource>();
         music.clip = Resources.Load<AudioClip>("music/Roselia-Kimi no Kioku");
+        GameStatus.startTime = (float)AudioSettings.dspTime;
         music.Play();
     }
 
-
-    void FixedUpdate()
+    void Update()
     {
-        // 显示应出现的Note
-        while (nextNote < totalNum && Math.Abs(counter - noteTimeline[nextNote]) < 1e-5)
-        {
-            notes[nextNote].GetComponent<Transform>().SetParent(slide, true);
-            notes[nextNote].active = true;
-            nextNote++;
-        }
-
-        counter += Time.fixedDeltaTime;
-
         foreach (Touch touch in Input.touches)
         {
             if (touch.phase == TouchPhase.Canceled) continue;
@@ -73,7 +55,7 @@ public class PlayMain : MonoBehaviour
             Vector3 touchPosition = touch.position;
             touchPosition.z = 0.5f;
 
-            for (int j = windowHead; j < nextNote; j++)
+            for (int j = windowHead; j < GameStatus.nextNoteID; j++)
             {
                 if ((Camera.main.ScreenToWorldPoint(touchPosition) - notes[j].gameObject.transform.position).magnitude < 1.0f)
                 {
@@ -89,8 +71,7 @@ public class PlayMain : MonoBehaviour
                         if (touch.phase != TouchPhase.Ended) continue;
                     }
 
-                    notes[j].GetComponent<Transform>().SetParent(null, true);
-                    notes[j].active = false;
+                    notes[j].Deactivate();
                     debugCombo++;
                     GameObject.Find("combo").GetComponent<Text>().text = debugCombo.ToString();
                     break;
@@ -101,17 +82,9 @@ public class PlayMain : MonoBehaviour
 
     void LateUpdate()
     {
-        while (windowHead < nextNote && !notes[windowHead].active)
+        while (windowHead < GameStatus.nextNoteID && !notes[windowHead].active)
         {
             windowHead++;
         }
-    }
-
-    Note CreateNote(int col)
-    {
-        RawImage noteObj = Instantiate(noteTemplete);
-        noteObj.transform.position = new Vector3(GlobalSettings.leftNoteXPos + col * GlobalSettings.interval, GlobalSettings.appearDistance, 0);
-
-        return noteObj.gameObject.AddComponent<Note>();
     }
 }
