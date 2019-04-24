@@ -11,6 +11,8 @@ public class LongPressNote : Note
     private SingleNote headNote;
     private SingleNote tailNote;
 
+    private bool holdVaild = false;
+
     void Start()
     {
         base.OnStart();
@@ -45,26 +47,52 @@ public class LongPressNote : Note
 
                 Vector3 touchWorldPosition = Camera.main.ScreenToWorldPoint(touch.position);
                 if (Math.Abs(touchWorldPosition.y) > 1.0f) continue;
-                touchWorldPosition.z = 0;
+                if (Math.Abs(tailNote.transform.position.x - touchWorldPosition.x) > GlobalData.interval / 2) continue;
 
-                if (touch.phase == TouchPhase.Ended && Math.Abs(tailNote.transform.position.x - touchWorldPosition.x) < GlobalData.interval / 2)
+                if (touch.phase == TouchPhase.Ended)
                 {
+                    if (Math.Abs(tailNote.transform.position.y - touchWorldPosition.y) < 1.0f)
+                    {
+                        GameStatus.comboNum++;
+                    }
+                    else
+                    {
+                        GameStatus.comboNum = 0;
+                    }
+
                     headNote.Deactivate();
                     tailNote.Deactivate();
                     Deactivate();
-                    GameStatus.comboNum++;
                     break;
                 }
-                else if ((touch.phase == TouchPhase.Began || touch.phase == TouchPhase.Stationary) && Math.Abs(headNote.transform.position.x - touchWorldPosition.x) < GlobalData.interval / 2)
+                else if (touch.phase == TouchPhase.Began && Math.Abs(headNote.transform.position.y - touchWorldPosition.y) < 1.0f)
                 {
                     headNote.transform.position = new Vector3(headNote.transform.position.x, 0, headNote.transform.position.z);
                     if (!headNote.holding) GameStatus.comboNum++;
                     headNote.holding = true;
+                    holdVaild = true;
                 }
+                else if (Math.Abs(tailNote.transform.position.x - touchWorldPosition.x) < GlobalData.interval / 2)
+                {
+                    holdVaild = true;
+                }
+            }
+
+            if (active && !holdVaild && headNote.holding)
+            {
+                headNote.Deactivate();
+                tailNote.Deactivate();
+                Deactivate();
+                GameStatus.comboNum = 0;
             }
 
             gameObject.GetComponent<RectTransform>().localScale = new Vector3(1f, length / slideScaleY, 1f);
             gameObject.GetComponent<RectTransform>().position = (tailNote.transform.position + headNote.transform.position) / 2;
         }
+    }
+
+    void LateUpdate()
+    {
+        holdVaild = false;
     }
 }
