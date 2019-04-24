@@ -6,7 +6,9 @@ public enum NoteType
     NORMAL = 0,
     LEFT = 1,
     RIGHT = 2,
-    LONG = 3
+    LONG = 3,
+    LONG_START = 4,
+    LONG_END = 5
 }
 
 public class Note : MonoBehaviour
@@ -16,6 +18,7 @@ public class Note : MonoBehaviour
     public bool activated = false;
     public float activateTime = 0.0f;
     public float hitTime = 0.0f;
+    public int colNum;
 
     // 激活Note，显示在窗口上并开始移动
     public void Activate()
@@ -29,8 +32,8 @@ public class Note : MonoBehaviour
         activateTime = (float)AudioSettings.dspTime;
     }
 
-    // 生成Note，在第col列(从0开始计数)，类型为type，若为NoteType.LONG，则length表示长押持续时间
-    public static Note CreateNote(int col, NoteType type, float length = 0)
+    // 生成Note，在第col列(从0开始计数)，类型为type，若为NoteType.LONG，则data表示长押持续时间
+    public static Note CreateNote(int col, NoteType type, float data = 0)
     {
         RawImage noteObj;
         Note note;
@@ -41,7 +44,7 @@ public class Note : MonoBehaviour
             noteObj.transform.position = new Vector3(GlobalData.leftNoteXPos + col * GlobalData.interval, GlobalData.appearDistance, 0);
 
             note = noteObj.gameObject.AddComponent<LongPressNote>();
-            (note as LongPressNote).maxLength = length;
+            (note as LongPressNote).holdTime = data;
         }
         else
         {
@@ -51,33 +54,7 @@ public class Note : MonoBehaviour
             note = noteObj.gameObject.AddComponent<SingleNote>();
         }
 
-        note.type = type;
-        return note;
-    }
-
-
-    // 生成Note，指定世界坐标系下X的值为xPosition，类型为type，若为NoteType.LONG，则length表示长押持续时间
-    public static Note CreateNote(float xPosition, NoteType type, float length = 0)
-    {
-        RawImage noteObj;
-        Note note;
-
-        if (type == NoteType.LONG)
-        {
-            noteObj = Instantiate(GlobalData.longPressTemplate);
-            noteObj.transform.position = new Vector3(xPosition, GlobalData.appearDistance, 0);
-
-            note = noteObj.gameObject.AddComponent<LongPressNote>();
-            (note as LongPressNote).maxLength = length;
-        }
-        else
-        {
-            noteObj = Instantiate(GlobalData.noteTemplate);
-            noteObj.transform.position = new Vector3(xPosition, GlobalData.appearDistance, 0);
-
-            note = noteObj.gameObject.AddComponent<SingleNote>();
-        }
-
+        note.colNum = col;
         note.type = type;
         return note;
     }
@@ -85,6 +62,8 @@ public class Note : MonoBehaviour
     // 使Note在窗口中消失，并不销毁
     public void Deactivate()
     {
+        if (!active) return;
+
         GetComponent<Transform>().SetParent(null, true);
         active = false;
     }
@@ -99,10 +78,10 @@ public class Note : MonoBehaviour
             case NoteType.RIGHT:
                 gameObject.GetComponent<RawImage>().texture = Resources.Load<Texture>("right");
                 break;
-            case NoteType.NORMAL:
-                gameObject.GetComponent<RawImage>().texture = Resources.Load<Texture>("note");
+            case NoteType.LONG:
                 break;
             default:
+                gameObject.GetComponent<RawImage>().texture = Resources.Load<Texture>("note");
                 break;
         }
     }

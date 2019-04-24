@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class SingleNote : Note
 {
+    public bool holding = false;
+
     void Start()
     {
         base.OnStart();
@@ -14,11 +16,13 @@ public class SingleNote : Note
 
         if (active)
         {
-            transform.position = new Vector3(
-                transform.position.x,
-                GlobalData.appearDistance - GlobalData.speed * (float)(AudioSettings.dspTime - activateTime),
-                transform.position.z
-            );
+            if (!holding)
+            {
+                transform.position = new Vector3(
+                    transform.position.x,
+                    GlobalData.appearDistance - GlobalData.speed * (float)(AudioSettings.dspTime - activateTime),
+                    transform.position.z);
+            }
 
             foreach (Touch touch in Input.touches)
             {
@@ -35,6 +39,14 @@ public class SingleNote : Note
                     {
                         if (touch.phase != TouchPhase.Began) continue;
                     }
+                    else if (type == NoteType.LONG_START)
+                    {
+                        continue;
+                    }
+                    else if (type == NoteType.LONG_END)
+                    {
+                        continue;
+                    }
                     else
                     {
                         if (type == NoteType.LEFT && touch.deltaPosition.x > -2.0f) continue;
@@ -45,6 +57,12 @@ public class SingleNote : Note
                     GameStatus.comboNum++;
                     break;
                 }
+            }
+
+            if (transform.position.y < -1.0f)
+            {
+                Deactivate();
+                GameStatus.comboNum = 0;
             }
         }
     }
