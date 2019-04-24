@@ -25,6 +25,7 @@ public class LongPressNote : Note
     void Update()
     {
         base.OnUpdate();
+
         if (active)
         {
             length = tailNote.transform.position.y - headNote.transform.position.y;

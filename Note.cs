@@ -110,7 +110,7 @@ public class Note : MonoBehaviour
     protected virtual void OnUpdate()
     {
         // 当前时刻(音乐开始播放时为0时刻) > note到达判定区的时刻 - note运动到判定区的时间
-        if (AudioSettings.dspTime - GameStatus.startTime > hitTime - GlobalData.appearDistance / GlobalData.speed)
+        if (!active && !activated && AudioSettings.dspTime - GameStatus.startTime > hitTime - GlobalData.appearDistance / GlobalData.speed)
         {
             Activate();
         }
