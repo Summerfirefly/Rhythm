@@ -7,15 +7,12 @@ public class GlobalData : MonoBehaviour
     public static RawImage judgePoint;
     public static RawImage longPressTemplate;
 
-    public static int colNum
-    {
-        get;
-    } = 7;
-
+    public static int colNum = 7;
     public static float interval = 1.5f;
     public static float leftNoteXPos = -(colNum / 2) * interval;
     public static float appearDistance = 3.8f;
-    public static float speed = 3.0f;
+    public static float speed = 4.5f;
+    public static float judgeRange = 1.0f;
 
     void Awake()
     {
