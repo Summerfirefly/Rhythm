@@ -46,14 +46,18 @@ public class LongPressNote : Note
                 if (touch.phase == TouchPhase.Canceled) continue;
 
                 Vector3 touchWorldPosition = Camera.main.ScreenToWorldPoint(touch.position);
-                if (Math.Abs(touchWorldPosition.y) > 1.0f) continue;
+                if (Math.Abs(touchWorldPosition.y) > GlobalData.judgeRange) continue;
                 if (Math.Abs(tailNote.transform.position.x - touchWorldPosition.x) > GlobalData.interval / 2) continue;
 
                 if (touch.phase == TouchPhase.Ended)
                 {
-                    if (Math.Abs(tailNote.transform.position.y - touchWorldPosition.y) < 1.0f)
+                    if (Math.Abs(AudioSettings.dspTime - GameStatus.startTime - tailNote.hitTime) < 0.2f)
                     {
                         GameStatus.comboNum++;
+                    }
+                    else if (!headNote.holding)
+                    {
+                        continue;
                     }
                     else
                     {
@@ -65,7 +69,7 @@ public class LongPressNote : Note
                     Deactivate();
                     break;
                 }
-                else if (touch.phase == TouchPhase.Began && Math.Abs(headNote.transform.position.y - touchWorldPosition.y) < 1.0f)
+                else if (touch.phase == TouchPhase.Began && Math.Abs(AudioSettings.dspTime - GameStatus.startTime - headNote.hitTime) < 0.2f)
                 {
                     headNote.transform.position = new Vector3(headNote.transform.position.x, 0, headNote.transform.position.z);
                     if (!headNote.holding) GameStatus.comboNum++;

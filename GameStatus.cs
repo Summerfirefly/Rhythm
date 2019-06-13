@@ -4,7 +4,7 @@ using UnityEngine.UI;
 public class GameStatus : MonoBehaviour
 {
     public static int nextNoteID = 0;
-    public static string playName;
+    public static string playName = "Roselia-Hisyoku no Sora";
     public static float startTime;
 
     public static int comboNum = 0;

@@ -29,21 +29,17 @@ public class SingleNote : Note
                 if (touch.phase == TouchPhase.Canceled) continue;
 
                 Vector3 touchWorldPosition = Camera.main.ScreenToWorldPoint(touch.position);
-                if (Math.Abs(touchWorldPosition.y) > 1.0f) continue;
+                if (Math.Abs(touchWorldPosition.y) > GlobalData.judgeRange) continue;
                 touchWorldPosition.z = 0;
 
-                if (Math.Abs(transform.position.y) < 1.0f &&
+                if (Math.Abs(AudioSettings.dspTime - GameStatus.startTime - hitTime) < 0.2f &&
                     Math.Abs(transform.position.x - touchWorldPosition.x) < GlobalData.interval / 2)
                 {
                     if (type == NoteType.NORMAL)
                     {
                         if (touch.phase != TouchPhase.Began) continue;
                     }
-                    else if (type == NoteType.LONG_START)
-                    {
-                        continue;
-                    }
-                    else if (type == NoteType.LONG_END)
+                    else if (type == NoteType.LONG_START || type == NoteType.LONG_END)
                     {
                         continue;
                     }
@@ -59,7 +55,7 @@ public class SingleNote : Note
                 }
             }
 
-            if (transform.position.y < -1.0f)
+            if (transform.position.y < -GlobalData.judgeRange)
             {
                 Deactivate();
                 GameStatus.comboNum = 0;
