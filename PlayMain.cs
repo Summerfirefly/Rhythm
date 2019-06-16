@@ -1,11 +1,13 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayMain : MonoBehaviour
 {
     void Start()
     {
+        GlobalData.LoadConfig();
         GameStatus.slide = GameObject.Find("Slide").GetComponent<Transform>();
         GameStatus.comboText = GameObject.Find("ComboText").GetComponent<Text>();
 
@@ -28,10 +30,16 @@ public class PlayMain : MonoBehaviour
 
         foreach (string scoreLine in score)
         {
+            if (!scoreLine.Contains(","))
+            {
+                GameStatus.length = (float)Convert.ToDouble(scoreLine);
+                continue;
+            }
+
             Note note;
             string[] temp = scoreLine.Split(',');
             note = Note.CreateNote(Convert.ToInt32(temp[1]), (NoteType)Convert.ToInt32(temp[2]), (float)Convert.ToDouble(temp[3]));
-            note.hitTime = (float)Convert.ToDouble(temp[0]);
+            note.hitTime = (float)Convert.ToDouble(temp[0]) + GlobalData.offset / 20.0f;
         }
 
         // 播放音乐
@@ -44,5 +52,12 @@ public class PlayMain : MonoBehaviour
     void LateUpdate()
     {
         GameStatus.comboText.text = GameStatus.comboNum.ToString();
+
+        if (AudioSettings.dspTime - GameStatus.startTime > GameStatus.length)
+        {
+            AudioSource music = Camera.main.gameObject.GetComponent<AudioSource>();
+            music.Stop();
+            SceneManager.LoadScene("MenuScene");
+        }
     }
 }

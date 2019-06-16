@@ -51,7 +51,7 @@ public class LongPressNote : Note
 
                 if (touch.phase == TouchPhase.Ended)
                 {
-                    if (Math.Abs(AudioSettings.dspTime - GameStatus.startTime - tailNote.hitTime) < 0.2f)
+                    if (Math.Abs(AudioSettings.dspTime - GameStatus.startTime - tailNote.hitTime) < GlobalData.tolerant)
                     {
                         GameStatus.comboNum++;
                     }
@@ -69,7 +69,7 @@ public class LongPressNote : Note
                     Deactivate();
                     break;
                 }
-                else if (touch.phase == TouchPhase.Began && Math.Abs(AudioSettings.dspTime - GameStatus.startTime - headNote.hitTime) < 0.2f)
+                else if (touch.phase == TouchPhase.Began && Math.Abs(AudioSettings.dspTime - GameStatus.startTime - headNote.hitTime) < GlobalData.tolerant)
                 {
                     headNote.transform.position = new Vector3(headNote.transform.position.x, 0, headNote.transform.position.z);
                     if (!headNote.holding) GameStatus.comboNum++;

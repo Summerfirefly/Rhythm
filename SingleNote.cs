@@ -32,7 +32,7 @@ public class SingleNote : Note
                 if (Math.Abs(touchWorldPosition.y) > GlobalData.judgeRange) continue;
                 touchWorldPosition.z = 0;
 
-                if (Math.Abs(AudioSettings.dspTime - GameStatus.startTime - hitTime) < 0.2f &&
+                if (Math.Abs(AudioSettings.dspTime - GameStatus.startTime - hitTime) < GlobalData.tolerant &&
                     Math.Abs(transform.position.x - touchWorldPosition.x) < GlobalData.interval / 2)
                 {
                     if (type == NoteType.NORMAL)
