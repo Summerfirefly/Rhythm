@@ -10,6 +10,7 @@ public enum Source
 public class GameStatus : MonoBehaviour
 {
     public static int nextNoteID = 0;
+    public static int currentSelect = 0;
     public static string playName = "00001";
     public static Source source = Source.ORIGIN;
     public static float startTime;

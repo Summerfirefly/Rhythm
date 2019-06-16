@@ -31,7 +31,7 @@ public class MenuSceneUI : MonoBehaviour
 
     public void OnStartClick()
     {
-        SceneManager.LoadScene("PlayScene");
+        SceneManager.LoadScene("SelectScene");
     }
 
     public void OnSettingsClick()
