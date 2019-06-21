@@ -44,8 +44,8 @@ public class SettingsSceneUI : MonoBehaviour
 
     void Update()
     {
-        speed.text = GlobalData.speedMul.ToString();
-        offset.text = GlobalData.offset.ToString();
+        speed.text = $"速度: {GlobalData.speedMul.ToString()}%";
+        offset.text = $"偏移: { GlobalData.offset.ToString()}";
     }
 
     public void SpeedUp()
