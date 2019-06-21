@@ -32,7 +32,8 @@ public class SingleNote : Note
                 if (Math.Abs(touchWorldPosition.y) > GlobalData.judgeRange) continue;
                 touchWorldPosition.z = 0;
 
-                if (Math.Abs(AudioSettings.dspTime - GameStatus.startTime - hitTime) < GlobalData.tolerant &&
+                float time = (float)Math.Abs(AudioSettings.dspTime - GameStatus.startTime - hitTime);
+                if (time < GlobalData.tolerant &&
                     Math.Abs(transform.position.x - touchWorldPosition.x) < GlobalData.interval / 2)
                 {
                     if (type == NoteType.NORMAL)
@@ -51,6 +52,11 @@ public class SingleNote : Note
 
                     Deactivate();
                     GameStatus.comboNum++;
+
+                    if (time < 0.07) GameStatus.perfect++;
+                    else if (time > 0.14) GameStatus.good++;
+                    else GameStatus.great++;
+
                     break;
                 }
             }
@@ -59,6 +65,7 @@ public class SingleNote : Note
             {
                 Deactivate();
                 GameStatus.comboNum = 0;
+                GameStatus.miss++;
             }
         }
     }

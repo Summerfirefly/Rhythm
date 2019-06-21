@@ -57,7 +57,7 @@ public class PlayMain : MonoBehaviour
         {
             AudioSource music = Camera.main.gameObject.GetComponent<AudioSource>();
             music.Stop();
-            SceneManager.LoadScene("MenuScene");
+            SceneManager.LoadScene("ResultScene");
         }
     }
 }

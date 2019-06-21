@@ -51,9 +51,14 @@ public class LongPressNote : Note
 
                 if (touch.phase == TouchPhase.Ended)
                 {
-                    if (Math.Abs(AudioSettings.dspTime - GameStatus.startTime - tailNote.hitTime) < GlobalData.tolerant)
+                    float time = (float)Math.Abs(AudioSettings.dspTime - GameStatus.startTime - tailNote.hitTime);
+                    if (time < GlobalData.tolerant)
                     {
                         GameStatus.comboNum++;
+
+                        if (time < 0.07) GameStatus.perfect++;
+                        else if (time > 0.14) GameStatus.good++;
+                        else GameStatus.great++;
                     }
                     else if (!headNote.holding)
                     {
@@ -62,6 +67,7 @@ public class LongPressNote : Note
                     else
                     {
                         GameStatus.comboNum = 0;
+                        GameStatus.miss++;
                     }
 
                     headNote.Deactivate();
@@ -71,8 +77,15 @@ public class LongPressNote : Note
                 }
                 else if (touch.phase == TouchPhase.Began && Math.Abs(AudioSettings.dspTime - GameStatus.startTime - headNote.hitTime) < GlobalData.tolerant)
                 {
+                    float time = (float)Math.Abs(AudioSettings.dspTime - GameStatus.startTime - headNote.hitTime);
                     headNote.transform.position = new Vector3(headNote.transform.position.x, 0, headNote.transform.position.z);
-                    if (!headNote.holding) GameStatus.comboNum++;
+                    if (!headNote.holding)
+                    {
+                        GameStatus.comboNum++;
+                        if (time < 0.07) GameStatus.perfect++;
+                        else if (time > 0.14) GameStatus.good++;
+                        else GameStatus.great++;
+                    }
                     headNote.holding = true;
                     holdVaild = true;
                 }
@@ -88,6 +101,7 @@ public class LongPressNote : Note
                 tailNote.Deactivate();
                 Deactivate();
                 GameStatus.comboNum = 0;
+                GameStatus.miss++;
             }
 
             gameObject.GetComponent<RectTransform>().localScale = new Vector3(1f, length / slideScaleY, 1f);

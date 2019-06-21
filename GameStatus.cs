@@ -17,6 +17,10 @@ public class GameStatus : MonoBehaviour
     public static float length;
 
     public static int comboNum = 0;
+    public static int perfect = 0;
+    public static int great = 0;
+    public static int good = 0;
+    public static int miss = 0;
 
     public static Transform slide;
     public static Text comboText;
